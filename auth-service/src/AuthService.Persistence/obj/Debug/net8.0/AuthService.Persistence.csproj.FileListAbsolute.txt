@@ -77,3 +77,22 @@ C:\Users\Gahel\Desktop\Proyecto restaurante\Canela Urbana\auth-service\src\AuthS
 C:\Users\Gahel\Desktop\Proyecto restaurante\Canela Urbana\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.pdb
 C:\Users\Gahel\Desktop\Proyecto restaurante\Canela Urbana\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.genruntimeconfig.cache
 C:\Users\Gahel\Desktop\Proyecto restaurante\Canela Urbana\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\ref\AuthService.Persistence.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Persistence.deps.json
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Persistence.runtimeconfig.json
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Persistence.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Persistence.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Application.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Domain.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Domain.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\bin\Debug\net8.0\AuthService.Application.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.csproj.AssemblyReference.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.AssemblyInfoInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.AssemblyInfo.cs
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.csproj.CoreCompileInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\refint\AuthService.Persistence.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthService.Persistence.genruntimeconfig.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\ref\AuthService.Persistence.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\auth-service\src\AuthService.Persistence\obj\Debug\net8.0\AuthServ.5D1D95C4.Up2Date
