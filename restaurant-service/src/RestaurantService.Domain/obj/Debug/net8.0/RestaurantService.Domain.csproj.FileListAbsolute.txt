@@ -1,0 +1,11 @@
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\bin\Debug\net8.0\RestaurantService.Domain.deps.json
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\bin\Debug\net8.0\RestaurantService.Domain.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\bin\Debug\net8.0\RestaurantService.Domain.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.AssemblyInfoInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.AssemblyInfo.cs
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\refint\RestaurantService.Domain.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\RestaurantService.Domain.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Domain\obj\Debug\net8.0\ref\RestaurantService.Domain.dll
