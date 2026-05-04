@@ -1,0 +1,15 @@
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\bin\Debug\net8.0\RestaurantService.Application.deps.json
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\bin\Debug\net8.0\RestaurantService.Application.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\bin\Debug\net8.0\RestaurantService.Application.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\bin\Debug\net8.0\RestaurantService.Domain.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\bin\Debug\net8.0\RestaurantService.Domain.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.csproj.AssemblyReference.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.AssemblyInfoInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.AssemblyInfo.cs
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.csproj.CoreCompileInputs.cache
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\Restaura.1695A24E.Up2Date
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\refint\RestaurantService.Application.dll
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\RestaurantService.Application.pdb
+C:\Users\Gahel\Desktop\RestauranteCanela-main\restaurant-service\src\RestaurantService.Application\obj\Debug\net8.0\ref\RestaurantService.Application.dll
