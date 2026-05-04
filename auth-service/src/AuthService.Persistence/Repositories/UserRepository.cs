@@ -28,7 +28,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             .Include(u => u.UserPasswordReset)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
@@ -39,7 +39,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             .Include(u => u.UserPasswordReset)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Username, username));
+            .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
     }
 
     public async Task<User?> GetByEmailVerificationTokenAsync(string token)
@@ -93,13 +93,13 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
     public async Task<bool> ExistsByEmailAsync(string email)
     {
         return await context.Users
-            .AnyAsync(u => EF.Functions.ILike(u.Email, email));
+            .AnyAsync(u => u.Email.ToLower() == email.ToLower());
     }
 
     public async Task<bool> ExistsByUsernameAsync(string username)
     {
         return await context.Users
-            .AnyAsync(u => EF.Functions.ILike(u.Username, username));
+            .AnyAsync(u => u.Username.ToLower() == username.ToLower());
     }
 
     public async Task UpdateUserRoleAsync(string userId, string roleId)
