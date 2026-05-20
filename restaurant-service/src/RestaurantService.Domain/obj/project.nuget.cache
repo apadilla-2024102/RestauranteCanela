@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zcF7FvfEO6E=",
+  "dgSpecHash": "Xdz3NA9QJvM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela-main\\restaurant-service\\src\\RestaurantService.Domain\\RestaurantService.Domain.csproj",
+  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela\\restaurant-service\\src\\RestaurantService.Domain\\RestaurantService.Domain.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Gahel\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
     "C:\\Users\\Gahel\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
