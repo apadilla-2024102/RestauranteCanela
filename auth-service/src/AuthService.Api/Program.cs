@@ -67,7 +67,15 @@ app.UseSecurityHeaders(policies => policies
         builder.AddStyleSrc().Self().UnsafeInline();
         builder.AddImgSrc().Self().Data();
         builder.AddFontSrc().Self().Data();
-        builder.AddConnectSrc().Self();
+        builder.AddConnectSrc().Self()
+            .From("http://localhost:3000")
+            .From("http://localhost:3001")
+            .From("http://localhost:5173")
+            .From("http://localhost:5174")
+            .From("https://localhost:3000")
+            .From("https://localhost:3001")
+            .From("https://localhost:5173")
+            .From("https://localhost:5174");
         builder.AddFrameAncestors().None();
         builder.AddBaseUri().Self();
         builder.AddFormAction().Self();

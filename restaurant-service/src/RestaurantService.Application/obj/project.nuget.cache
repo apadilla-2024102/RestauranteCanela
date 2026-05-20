@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HDQXbbq7mEc=",
+  "dgSpecHash": "8qv2lBjil/Q=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela-main\\restaurant-service\\src\\RestaurantService.Application\\RestaurantService.Application.csproj",
+  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela\\restaurant-service\\src\\RestaurantService.Application\\RestaurantService.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Gahel\\.nuget\\packages\\fluentvalidation\\12.0.0\\fluentvalidation.12.0.0.nupkg.sha512",
     "C:\\Users\\Gahel\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.0.0\\fluentvalidation.dependencyinjectionextensions.12.0.0.nupkg.sha512",

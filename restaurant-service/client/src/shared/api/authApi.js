@@ -11,6 +11,7 @@ const handleResponse = async (response) => {
 export const loginUser = async (credentials) => {
   const response = await fetch(`${AUTH_BASE_URL}/auth/login`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
   });
@@ -21,6 +22,7 @@ export const loginUser = async (credentials) => {
 export const registerUser = async (userData) => {
   const response = await fetch(`${AUTH_BASE_URL}/auth/register`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
   });
@@ -31,6 +33,7 @@ export const registerUser = async (userData) => {
 export const getUserProfile = async (token) => {
   const response = await fetch(`${AUTH_BASE_URL}/auth/profile`, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
