@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "pDwotwhEb6n/id08nZgB/Qhaln+CyOIT7W4ZaquaNjT8zy+QPZzxKa0IPZC+MSy4CRqTC2JsO/5GCVpcf1ru6Q==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela-main\\auth-service\\src\\AuthService.Domain\\AuthService.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Gahel\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
