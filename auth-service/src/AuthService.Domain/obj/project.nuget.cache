@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "pDwotwhEb6n/id08nZgB/Qhaln+CyOIT7W4ZaquaNjT8zy+QPZzxKa0IPZC+MSy4CRqTC2JsO/5GCVpcf1ru6Q==",
+  "dgSpecHash": "0g1Rdjg/d40=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Gahel\\Desktop\\RestauranteCanela-main\\auth-service\\src\\AuthService.Domain\\AuthService.Domain.csproj",
+  "projectFilePath": "C:\\Users\\Gahel\\Documents\\RestauranteCanela\\auth-service\\src\\AuthService.Domain\\AuthService.Domain.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Gahel\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512"
+    "C:\\Users\\Gahel\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
+    "C:\\Users\\Gahel\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\Gahel\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.24\\microsoft.windowsdesktop.app.ref.8.0.24.nupkg.sha512",
+    "C:\\Users\\Gahel\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.24\\microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512"
   ],
   "logs": []
 }
