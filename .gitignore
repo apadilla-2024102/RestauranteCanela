@@ -1,0 +1,70 @@
+# Environment variables (NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+npm-debug.log
+npm-error.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+pnpm-error.log
+
+# Build outputs
+dist/
+build/
+*.o
+*.a
+*.so
+out/
+target/
+bin/
+obj/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Testing
+.nyc_output/
+coverage/
+.jest/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.turbo
+
+# OS
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database.yml
+
+# Backups
+*.bak
+*.backup
+
+# Keep these template files
+!.env.example
+!.env.docker.example
