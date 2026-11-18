@@ -1,7 +1,10 @@
+/* Fundamentos */
 @import './tokens.css';
 @import './base.css';
 @import './motion.css';
 @import './utilities.css';
+
+/* Componentes */
 @import './components/spinner.css';
 @import './components/button.css';
 @import './components/field.css';
@@ -10,15 +13,17 @@
 @import './components/skeleton.css';
 @import './components/empty-state.css';
 @import './components/page-header.css';
+@import './components/toolbar.css';
+@import './components/segmented.css';
+@import './components/summary.css';
 @import './components/table.css';
 @import './components/sheet.css';
 @import './components/dropzone.css';
 @import './components/toast.css';
+
+/* Layout y páginas */
 @import './layout.css';
 @import './pages/auth.css';
 @import './pages/dashboard.css';
 @import './pages/restaurants.css';
-@import './components/toolbar.css';
-@import './components/segmented.css';
-@import './components/summary.css';
 @import './pages/reports.css';

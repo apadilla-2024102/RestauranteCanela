@@ -46,13 +46,6 @@
   animation-delay: 110ms;
 }
 
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-    filter: blur(2px);
-  }
-}
 
 .login__title {
   font-size: var(--text-2xl);

@@ -89,8 +89,3 @@
   transform: scale(0.92);
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-}
