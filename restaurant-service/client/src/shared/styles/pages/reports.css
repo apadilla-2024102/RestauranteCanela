@@ -104,3 +104,8 @@
   color: var(--text-3);
   font-size: var(--text-xs);
 }
+
+/* Con un número impar de métricas, la última ocupa toda la fila */
+.report-card__metrics > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
