@@ -1,0 +1,43 @@
+.badge {
+  --tone: var(--text-2);
+  --tone-soft: var(--neutral-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--tone-soft);
+  color: var(--tone);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge--success {
+  --tone: var(--success);
+  --tone-soft: var(--success-soft);
+}
+.badge--warning {
+  --tone: var(--warning);
+  --tone-soft: var(--warning-soft);
+}
+.badge--danger {
+  --tone: var(--danger);
+  --tone-soft: var(--danger-soft);
+}
+.badge--info {
+  --tone: var(--info);
+  --tone-soft: var(--info-soft);
+}
+.badge--accent {
+  --tone: var(--accent);
+  --tone-soft: var(--accent-soft);
+}
