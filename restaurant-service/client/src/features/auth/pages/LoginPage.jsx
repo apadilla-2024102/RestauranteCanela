@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/authStore.jsx';
 import { LoginForm } from '../components/LoginForm.jsx';
-import { PageShell } from '../../../shared/components/layout/PageShell.jsx';
+import { LoginShowcase } from '../components/LoginShowcase.jsx';
+import { Brand } from '../../../shared/components/layout/Brand.jsx';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -9,21 +10,21 @@ export const LoginPage = () => {
 
   const handleSubmit = async (form) => {
     await login(form);
-    navigate('/restaurants', { replace: true });
+    navigate('/dashboard', { replace: true });
   };
 
   return (
-    <PageShell
-      title="Bienvenido a Restaurante Canela"
-      subtitle=""
-    >
-      <div className="login-page">
-        <div className="login-page__panel">
-          <h2>Iniciar sesión</h2>
-          <p>Ingresa tu correo electrónico y contraseña para continuar.</p>
+    <div className="login">
+      <section className="login__main">
+        <Brand />
+        <div className="login__content">
+          <h1 className="login__title">Bienvenido de nuevo</h1>
+          <p className="login__subtitle">Ingresa tus credenciales para gestionar Restaurante Canela.</p>
           <LoginForm onSubmit={handleSubmit} />
         </div>
-      </div>
-    </PageShell>
+        <p className="login__footer">© {new Date().getFullYear()} Restaurante Canela</p>
+      </section>
+      <LoginShowcase />
+    </div>
   );
 };

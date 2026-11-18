@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/store/authStore.jsx';
+import { Spinner } from '../../shared/components/ui/Spinner.jsx';
 
 export const RequireAuth = ({ children }) => {
   const { loading, isAuthenticated } = useAuth();
@@ -7,8 +8,8 @@ export const RequireAuth = ({ children }) => {
   if (loading) {
     return (
       <div className="loading-screen">
-        <div className="loading-spinner"></div>
-        <p>Verificando autenticación...</p>
+        <Spinner size={20} label="Verificando sesión" />
+        <p>Verificando sesión…</p>
       </div>
     );
   }

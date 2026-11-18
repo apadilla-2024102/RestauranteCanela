@@ -1,0 +1,28 @@
+/* Franja de resumen: varias cifras en una sola superficie */
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.summary-strip__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-4) var(--space-5);
+  box-shadow: -1px 0 0 var(--border);
+}
+
+.summary-strip__label {
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.summary-strip__value {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}

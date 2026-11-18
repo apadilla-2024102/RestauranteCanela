@@ -1,0 +1,144 @@
+/* ---------- Tarjeta de restaurante ---------- */
+.restaurant-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.restaurant-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: rise-in 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+  transition: box-shadow var(--duration) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .restaurant-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+  .restaurant-card:hover .restaurant-card__media img {
+    transform: scale(1.03);
+  }
+}
+
+.restaurant-card__media {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.restaurant-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms var(--ease-out);
+}
+
+.restaurant-card__placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%),
+    var(--surface-2);
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-3));
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.restaurant-card__status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.restaurant-card__status .badge {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-xs);
+}
+
+.restaurant-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.restaurant-card__name {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.restaurant-card__description {
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.restaurant-card__meta {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.restaurant-card__meta li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.restaurant-card__meta svg {
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.restaurant-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+/* Chip de ID copiable */
+.id-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  transition:
+    color var(--duration-fast) ease,
+    transform var(--duration-press) var(--ease-out);
+}
+
+.id-chip:active {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .id-chip:hover {
+    color: var(--text);
+  }
+}

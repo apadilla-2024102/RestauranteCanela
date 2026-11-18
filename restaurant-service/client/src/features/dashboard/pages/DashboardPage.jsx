@@ -1,24 +1,36 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { Store, UtensilsCrossed, ShoppingBag, CalendarDays } from 'lucide-react';
 import { Layout } from '../../../shared/components/Layout.jsx';
-import toast from 'react-hot-toast';
-import { Building2, FileText, ShoppingCart, Calendar, ArrowRight } from 'lucide-react';
+import { PageHeader } from '../../../shared/components/ui/PageHeader.jsx';
+import { Badge } from '../../../shared/components/ui/Badge.jsx';
+import { StatCard } from '../components/StatCard.jsx';
+import { QuickActions } from '../components/QuickActions.jsx';
+import { RecentList } from '../components/RecentList.jsx';
+import { useAuth } from '../../auth/store/authStore.jsx';
 import { getAllRestaurants } from '../../../shared/api/restaurantApi.js';
 import { getAllOrders } from '../../../shared/api/ordersApi.js';
 import { getAllReservations } from '../../../shared/api/reservationsApi.js';
 import { getAllMenuItems } from '../../../shared/api/menuApi.js';
+import { formatMoney, formatDate, restaurantName } from '../../../shared/lib/format.js';
+import { ORDER_STATUS, statusOf } from '../../../shared/lib/status.js';
+
+const asList = (value) => (Array.isArray(value) ? value : []);
+
+const greeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Buenos días';
+  if (hour < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+};
 
 export const DashboardPage = () => {
-  const [stats, setStats] = useState({
-    restaurants: 0,
-    orders: 0,
-    reservations: 0,
-    menuItems: 0,
-  });
+  const { user } = useAuth();
+  const [data, setData] = useState({ restaurants: [], orders: [], reservations: [], menuItems: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadStats = async () => {
+    const load = async () => {
       try {
         const [restaurants, orders, reservations, menuItems] = await Promise.all([
           getAllRestaurants().catch(() => []),
@@ -26,12 +38,11 @@ export const DashboardPage = () => {
           getAllReservations().catch(() => []),
           getAllMenuItems().catch(() => []),
         ]);
-
-        setStats({
-          restaurants: Array.isArray(restaurants) ? restaurants.length : 0,
-          orders: Array.isArray(orders) ? orders.length : 0,
-          reservations: Array.isArray(reservations) ? reservations.length : 0,
-          menuItems: Array.isArray(menuItems) ? menuItems.length : 0,
+        setData({
+          restaurants: asList(restaurants),
+          orders: asList(orders),
+          reservations: asList(reservations),
+          menuItems: asList(menuItems),
         });
       } catch (error) {
         console.error('Error loading stats:', error);
@@ -40,129 +51,85 @@ export const DashboardPage = () => {
         setLoading(false);
       }
     };
-
-    loadStats();
+    load();
   }, []);
 
-  const statCards = [
-    {
-      label: 'Restaurantes',
-      value: stats.restaurants,
-      icon: Building2,
-      gradientBackground: 'linear-gradient(135deg, #ef4444 0%, #f59e0b 100%)',
-    },
-    {
-      label: 'Items de Menú',
-      value: stats.menuItems,
-      icon: FileText,
-      gradientBackground: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
-    },
-    {
-      label: 'Órdenes',
-      value: stats.orders,
-      icon: ShoppingCart,
-      gradientBackground: 'linear-gradient(135deg, #10b981 0%, #14b8a6 100%)',
-    },
-    {
-      label: 'Reservas',
-      value: stats.reservations,
-      icon: Calendar,
-      gradientBackground: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)',
-    },
+  const recentOrders = useMemo(() => [...data.orders].reverse().slice(0, 5), [data.orders]);
+  const recentReservations = useMemo(() => {
+    const toTime = (r) => new Date(`${String(r.date || '').slice(0, 10)}T${r.time || '00:00'}`).getTime() || 0;
+    return [...data.reservations].sort((a, b) => toTime(a) - toTime(b)).slice(0, 5);
+  }, [data.reservations]);
+
+  const stats = [
+    { label: 'Restaurantes', value: data.restaurants.length, icon: Store, hint: 'Locales registrados' },
+    { label: 'Platos en menú', value: data.menuItems.length, icon: UtensilsCrossed, hint: 'Elementos disponibles' },
+    { label: 'Órdenes', value: data.orders.length, icon: ShoppingBag, hint: 'Total histórico' },
+    { label: 'Reservaciones', value: data.reservations.length, icon: CalendarDays, hint: 'Total registradas' },
   ];
+
+  const firstName = (user?.name || user?.username || '').split(' ')[0];
+  const today = new Date().toLocaleDateString('es-GT', { weekday: 'long', day: 'numeric', month: 'long' });
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <section className="dashboard-hero">
-          <div>
-            <p className="eyebrow">Visión general</p>
-            <h1>Panel ejecutivo</h1>
-          
-          </div>
-          <div className="flex flex-col gap-3 justify-between">
-            <div className="stats-card">
-              <p className="text-sm uppercase tracking-widest text-slate-500">Resumen empresarial</p>
-              <p className="text-3xl font-bold text-slate-900 mt-3">{stats.restaurants + stats.orders + stats.reservations + stats.menuItems}</p>
-              <p className="text-sm text-slate-600 mt-2">Indicadores activos y lista para gestión inmediata.</p>
-            </div>
-          </div>
-        </section>
+      <PageHeader
+        eyebrow={today.charAt(0).toUpperCase() + today.slice(1)}
+        title={firstName ? `${greeting()}, ${firstName}` : greeting()}
+        description="Este es el resumen de tu operación."
+      />
 
-        {loading ? (
-          <div className="text-center py-8">Cargando...</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {statCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <div key={card.label} className="stats-card">
-                  <div className="flex justify-between items-start gap-4">
-                    <div>
-                      <p className="text-gray-500 text-sm uppercase tracking-widest">{card.label}</p>
-                      <p className="text-3xl font-bold text-gray-900 mt-3">{card.value}</p>
-                    </div>
-                    <div className="stats-card__icon" style={{ background: card.gradientBackground }}>
-                      <Icon size={26} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="bg-white rounded-3xl shadow p-6 border border-slate-200/80">
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900">Accesos rápidos</h2>
-              <p className="text-sm text-slate-600">Navega a los módulos más importantes en un solo clic.</p>
-            </div>
-          </div>
-          <div className="quick-actions">
-            <Link to="/restaurants" className="quick-action-card">
-              <div className="text-3xl text-red-500">
-                <Building2 size={28} />
-              </div>
-              <h3 className="quick-action-card__title">Restaurantes</h3>
-              <p className="quick-action-card__subtitle">Gestiona el catálogo de locales y su información.</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-red-600">
-                Ver módulo <ArrowRight size={16} />
-              </div>
-            </Link>
-            <Link to="/menu" className="quick-action-card">
-              <div className="text-3xl text-blue-500">
-                <FileText size={28} />
-              </div>
-              <h3 className="quick-action-card__title">Menú</h3>
-              <p className="quick-action-card__subtitle">Organiza y actualiza los platos con estilo ágil.</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-blue-600">
-                Ver módulo <ArrowRight size={16} />
-              </div>
-            </Link>
-            <Link to="/orders" className="quick-action-card">
-              <div className="text-3xl text-emerald-500">
-                <ShoppingCart size={28} />
-              </div>
-              <h3 className="quick-action-card__title">Órdenes</h3>
-              <p className="quick-action-card__subtitle">Controla pedidos activos y su seguimiento.</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-emerald-600">
-                Ver módulo <ArrowRight size={16} />
-              </div>
-            </Link>
-            <Link to="/reservations" className="quick-action-card">
-              <div className="text-3xl text-orange-500">
-                <Calendar size={28} />
-              </div>
-              <h3 className="quick-action-card__title">Reservas</h3>
-              <p className="quick-action-card__subtitle">Supervisa la ocupación y el flujo de clientes.</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-orange-600">
-                Ver módulo <ArrowRight size={16} />
-              </div>
-            </Link>
-          </div>
-        </div>
+      <div className="stats-grid">
+        {stats.map((stat, index) => (
+          <StatCard key={stat.label} {...stat} loading={loading} index={index} />
+        ))}
       </div>
+
+      <div className="dashboard-columns">
+        <RecentList
+          title="Órdenes recientes"
+          to="/orders"
+          items={recentOrders}
+          loading={loading}
+          emptyText="Aún no hay órdenes registradas."
+          renderItem={(order) => {
+            const status = statusOf(ORDER_STATUS, order.status);
+            return (
+              <>
+                <div className="grow">
+                  <p className="table__primary truncate">{order.customerName || 'Cliente'}</p>
+                  <p className="table__secondary truncate">
+                    {restaurantName(order.restaurantId, data.restaurants)} · <span className="tabular">{formatMoney(order.total)}</span>
+                  </p>
+                </div>
+                <Badge tone={status.tone}>{status.label}</Badge>
+              </>
+            );
+          }}
+        />
+        <RecentList
+          title="Próximas reservaciones"
+          to="/reservations"
+          items={recentReservations}
+          loading={loading}
+          emptyText="Aún no hay reservaciones."
+          renderItem={(res) => (
+            <>
+              <div className="grow">
+                <p className="table__primary truncate">{res.customerName}</p>
+                <p className="table__secondary truncate">{restaurantName(res.restaurantId, data.restaurants)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm tabular">{formatDate(res.date, { day: '2-digit', month: 'short' })}</p>
+                <p className="text-xs text-subtle tabular">
+                  {res.time || '—'} · {res.guests} pers.
+                </p>
+              </div>
+            </>
+          )}
+        />
+      </div>
+
+      <QuickActions />
     </Layout>
   );
 };
