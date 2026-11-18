@@ -1,0 +1,52 @@
+.segmented {
+  position: relative;
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 3px;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.segmented::-webkit-scrollbar {
+  display: none;
+}
+
+.segmented__indicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 220ms var(--ease-out),
+    width 220ms var(--ease-out);
+}
+
+.segmented__option {
+  position: relative;
+  z-index: 1;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast) ease;
+}
+
+.segmented__option[data-active='true'] {
+  color: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .segmented__option:hover {
+    color: var(--text);
+  }
+}
