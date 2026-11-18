@@ -20,14 +20,25 @@
   color: var(--text-2);
 }
 
-[data-sonner-toast] [data-button][data-action] {
+[data-sonner-toaster] [data-sonner-toast] [data-button][data-action] {
   background: var(--danger);
   color: #fff;
   border-radius: var(--radius-sm);
 }
 
-[data-sonner-toast] [data-button][data-cancel] {
+[data-sonner-toaster] [data-sonner-toast] [data-button][data-cancel] {
   background: var(--surface-2);
   color: var(--text);
   border-radius: var(--radius-sm);
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-button] {
+  height: 28px;
+  padding: 0 10px;
+  font-weight: 500;
+  transition: transform var(--duration-press) var(--ease-out);
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-button]:active {
+  transform: scale(0.96);
 }
