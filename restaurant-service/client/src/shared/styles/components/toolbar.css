@@ -67,3 +67,8 @@
     color: var(--text);
   }
 }
+
+.toolbar__filter {
+  width: 160px;
+  flex-shrink: 0;
+}

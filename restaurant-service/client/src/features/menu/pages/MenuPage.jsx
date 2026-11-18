@@ -1,27 +1,39 @@
-import { useEffect, useState } from 'react';
-import { Layout } from '../../../shared/components/Layout.jsx';
+import { useEffect, useMemo, useState } from 'react';
+import { ImageOff, Plus, UtensilsCrossed } from 'lucide-react';
 import { toast } from 'sonner';
+import { Layout } from '../../../shared/components/Layout.jsx';
+import { PageHeader } from '../../../shared/components/ui/PageHeader.jsx';
+import { Button } from '../../../shared/components/ui/Button.jsx';
+import { Badge } from '../../../shared/components/ui/Badge.jsx';
+import { Sheet } from '../../../shared/components/ui/Sheet.jsx';
+import { TableCard } from '../../../shared/components/ui/TableCard.jsx';
+import { RowActions } from '../../../shared/components/ui/RowActions.jsx';
+import { SearchField, Toolbar } from '../../../shared/components/ui/SearchField.jsx';
+import { Field, Input, Select, Textarea } from '../../../shared/components/ui/Field.jsx';
+import { ImageDropzone } from '../../../shared/components/ui/ImageDropzone.jsx';
+import { confirmAction } from '../../../shared/lib/confirm.js';
+import { formatMoney, entityId, restaurantName } from '../../../shared/lib/format.js';
+import { MENU_CATEGORY } from '../../../shared/lib/status.js';
 import { getAllRestaurants } from '../../../shared/api/restaurantApi.js';
 import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, uploadMenuImage } from '../../../shared/api/menuApi.js';
+
+const FORM_ID = 'menu-form';
+const EMPTY = { restaurantId: '', name: '', description: '', price: '', category: '', imageUrl: '' };
 
 export const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [menuError, setMenuError] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [formData, setFormData] = useState({
-    restaurantId: '',
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    imageUrl: '',
-  });
+  const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [formData, setFormData] = useState(EMPTY);
 
   useEffect(() => {
     loadRestaurants();
@@ -57,36 +69,51 @@ export const MenuPage = () => {
     }
   };
 
+  const filtered = useMemo(() => {
+    const term = search.toLowerCase().trim();
+    return menuItems.filter((item) => {
+      const matchesTerm = !term || [item.name, item.description].some((f) => (f || '').toLowerCase().includes(term));
+      const matchesCategory = !category || item.category === category;
+      return matchesTerm && matchesCategory;
+    });
+  }, [menuItems, search, category]);
+
+  const set = (key) => (e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormData(EMPTY);
+    setImagePreview('');
+    setSheetOpen(true);
+  };
+
+  const handleEdit = (item) => {
+    setFormData({
+      restaurantId: item.restaurantId?._id || item.restaurantId || '',
+      name: item.name,
+      description: item.description || '',
+      price: item.price,
+      category: item.category || '',
+      imageUrl: item.imageUrl || '',
+    });
+    setImagePreview(item.imageUrl || '');
+    setEditingId(entityId(item));
+    setSheetOpen(true);
+  };
+
   const handleImageSelect = async (file) => {
-    if (!file) return;
     setIsUploadingImage(true);
+    setImagePreview(URL.createObjectURL(file));
     try {
       const response = await uploadMenuImage(file);
       setFormData((prev) => ({ ...prev, imageUrl: response.imageUrl }));
-      setImagePreview(URL.createObjectURL(file));
       toast.success('Imagen cargada');
     } catch (error) {
       console.error(error);
+      setImagePreview(formData.imageUrl || '');
       toast.error('Error al subir la imagen');
     } finally {
       setIsUploadingImage(false);
-    }
-  };
-
-  const handleImageInputChange = (e) => {
-    if (e.target.files?.[0]) {
-      handleImageSelect(e.target.files[0]);
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    if (e.dataTransfer.files?.[0]) {
-      handleImageSelect(e.dataTransfer.files[0]);
     }
   };
 
@@ -111,6 +138,7 @@ export const MenuPage = () => {
       price: parseFloat(formData.price),
     };
 
+    setSaving(true);
     try {
       if (editingId) {
         await updateMenuItem(editingId, payload);
@@ -119,249 +147,184 @@ export const MenuPage = () => {
         await createMenuItem(payload);
         toast.success('Elemento del menú creado');
       }
-      setFormData({ restaurantId: '', name: '', description: '', price: '', category: '', imageUrl: '' });
-      setImagePreview('');
-      setEditingId(null);
-      setShowForm(false);
+      setSheetOpen(false);
       loadMenuItems();
     } catch (error) {
       toast.error('Error al guardar elemento del menú');
       console.error(error);
+    } finally {
+      setSaving(false);
     }
-  }; 
-
-  const handleEdit = (item) => {
-    setFormData({
-      restaurantId: item.restaurantId?._id || item.restaurantId || '',
-      name: item.name,
-      description: item.description || '',
-      price: item.price,
-      category: item.category || '',
-      imageUrl: item.imageUrl || '',
-    });
-    setImagePreview(item.imageUrl || '');
-    setEditingId(item.id || item._id);
-    setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este elemento del menú?')) return;
+  const handleDelete = async (item) => {
+    const ok = await confirmAction({ title: `¿Eliminar “${item.name}”?`, description: 'Se quitará del menú.' });
+    if (!ok) return;
     try {
-      await deleteMenuItem(id);
+      await deleteMenuItem(entityId(item));
       toast.success('Elemento del menú eliminado');
       loadMenuItems();
     } catch (error) {
       toast.error('Error al eliminar elemento del menú');
     }
-  }; 
+  };
+
+  const columns = [
+    {
+      key: 'name',
+      header: 'Plato',
+      render: (item) => (
+        <div className="row" style={{ '--gap': '12px' }}>
+          <span className="table__thumb">
+            {item.imageUrl ? <img src={item.imageUrl} alt="" loading="lazy" /> : <ImageOff size={16} />}
+          </span>
+          <div className="grow">
+            <p className="table__primary">{item.name}</p>
+            {item.description && <p className="table__secondary line-clamp-2">{item.description}</p>}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      header: 'Categoría',
+      render: (item) => (item.category ? <Badge dot={false}>{MENU_CATEGORY[item.category] || item.category}</Badge> : '—'),
+    },
+    {
+      key: 'restaurant',
+      header: 'Restaurante',
+      render: (item) => <span className="text-muted nowrap">{restaurantName(item.restaurantId, restaurants)}</span>,
+    },
+    {
+      key: 'price',
+      header: 'Precio',
+      align: 'right',
+      render: (item) => <span className="tabular nowrap table__primary">{formatMoney(item.price)}</span>,
+    },
+    {
+      key: 'actions',
+      header: <span className="visually-hidden">Acciones</span>,
+      align: 'right',
+      width: 96,
+      render: (item) => <RowActions label={item.name} onEdit={() => handleEdit(item)} onDelete={() => handleDelete(item)} />,
+    },
+  ];
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Menú</h1>
-            <p className="text-gray-600">Gestiona los elementos del menú</p>
-          </div>
-          <button
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingId(null);
-              setFormData({ restaurantId: '', name: '', description: '', price: '', category: '', imageUrl: '' });
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          >
-            {showForm ? '✕ Cancelar' : '+ Nuevo plato'}
-          </button>
-        </div>
+      <PageHeader
+        eyebrow="Operación"
+        title="Menú"
+        description="Platos, precios y categorías de cada restaurante."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus /> Nuevo plato
+          </Button>
+        }
+      />
 
-        {showForm && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {editingId ? 'Editar elemento del menú' : 'Nuevo elemento del menú'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {restaurants.length > 0 ? (
-                <select
-                  value={formData.restaurantId}
-                  onChange={(e) => setFormData({ ...formData, restaurantId: e.target.value })}
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+      <Toolbar meta={!loading && !menuError ? `${filtered.length} platos` : null}>
+        <SearchField value={search} onChange={setSearch} placeholder="Buscar plato" />
+        <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filtrar por categoría" className="toolbar__filter">
+          <option value="">Todas</option>
+          {Object.entries(MENU_CATEGORY).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Select>
+      </Toolbar>
+
+      <TableCard
+        loading={loading}
+        error={menuError}
+        onRetry={loadMenuItems}
+        rows={filtered}
+        columns={columns}
+        caption="Elementos del menú"
+        empty={{
+          icon: UtensilsCrossed,
+          title: search || category ? 'Sin resultados' : 'El menú está vacío',
+          description: search || category ? 'Prueba con otro término o categoría.' : 'Agrega tu primer plato para empezar.',
+        }}
+      />
+
+      <Sheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={editingId ? 'Editar plato' : 'Nuevo plato'}
+        description="Los platos aparecen en el menú del restaurante seleccionado."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setSheetOpen(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form={FORM_ID} loading={saving} disabled={isUploadingImage}>
+              {editingId ? 'Guardar cambios' : 'Crear plato'}
+            </Button>
+          </>
+        }
+      >
+        <form id={FORM_ID} className="stack" onSubmit={handleSubmit}>
+          <Field label="Nombre">
+            {(a11y) => <Input {...a11y} value={formData.name} onChange={set('name')} placeholder="Pepián de pollo" />}
+          </Field>
+
+          {restaurants.length > 0 || restaurantsLoading ? (
+            <Field label="Restaurante" hint={restaurantsLoading ? 'Cargando restaurantes…' : undefined}>
+              {(a11y) => (
+                <Select {...a11y} value={formData.restaurantId} onChange={set('restaurantId')} disabled={restaurantsLoading}>
                   <option value="">Seleccionar restaurante</option>
-                  {restaurants.map((restaurant) => (
-                    <option key={restaurant.id || restaurant._id} value={restaurant.id || restaurant._id}>
-                      {restaurant.name || restaurant.title || (restaurant.id || restaurant._id)}
+                  {restaurants.map((r) => (
+                    <option key={entityId(r)} value={entityId(r)}>
+                      {r.name || r.title || entityId(r)}
                     </option>
                   ))}
-                </select>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    placeholder="ID del restaurante"
-                    value={formData.restaurantId}
-                    onChange={(e) => setFormData({ ...formData, restaurantId: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <p className="text-sm text-gray-500 mt-2">
-                    No hay restaurantes cargados. Crea uno primero o ingresa un ID válido.
-                  </p>
-                </>
+                </Select>
               )}
-              <textarea
-                placeholder="Descripción"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="3"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="number"
-                  placeholder="Precio"
-                  step="0.01"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Seleccionar categoría</option>
-                  <option value="appetizer">Entrada</option>
-                  <option value="main_course">Plato principal</option>
-                  <option value="dessert">Postre</option>
-                  <option value="beverage">Bebida</option>
-                  <option value="side">Acompañamiento</option>
-                </select>
-              </div>
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                className="border-dashed border-2 border-slate-300 rounded-2xl p-4 text-center cursor-pointer"
-              >
-                <p className="text-sm text-slate-500 mb-2">Arrastra tu imagen aquí o selecciona un archivo</p>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageInputChange}
-                  className="w-full"
-                />
-                {isUploadingImage && <p className="text-sm text-blue-600 mt-2">Subiendo imagen...</p>}
-                {(imagePreview || formData.imageUrl) && (
-                  <div className="mt-4 mx-auto w-40 h-28 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                    <img
-                      src={imagePreview || formData.imageUrl}
-                      alt="Vista previa"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-              >
-                {editingId ? 'Guardar Cambios' : 'Crear'}
-              </button>
-            </form>
-          </div>
-        )}
+            </Field>
+          ) : (
+            <Field label="ID del restaurante" hint="No hay restaurantes cargados. Crea uno primero o ingresa un ID válido.">
+              {(a11y) => <Input {...a11y} className="mono" value={formData.restaurantId} onChange={set('restaurantId')} />}
+            </Field>
+          )}
 
-        {loading ? (
-          <div className="text-center py-8">Cargando...</div>
-        ) : menuError ? (
-          <div className="text-center py-8">
-            <div className="inline-block bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md">
-              <div className="font-medium">Error al cargar el menú</div>
-              <div className="text-sm">{menuError}</div>
-              <div className="mt-2">
-                <button onClick={loadMenuItems} className="px-4 py-2 bg-blue-600 text-white rounded-md">Reintentar</button>
-              </div>
-            </div>
+          <div className="grid-2">
+            <Field label="Precio">
+              {(a11y) => (
+                <Input {...a11y} type="number" inputMode="decimal" step="0.01" min="0" value={formData.price} onChange={set('price')} placeholder="0.00" />
+              )}
+            </Field>
+            <Field label="Categoría">
+              {(a11y) => (
+                <Select {...a11y} value={formData.category} onChange={set('category')}>
+                  <option value="">Seleccionar</option>
+                  {Object.entries(MENU_CATEGORY).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
           </div>
-        ) : menuItems.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">No hay elementos de menú</div>
-        ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Imagen
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Nombre
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Categoría
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Precio
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {menuItems.map((item) => (
-                  <tr key={item.id || item._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      {item.imageUrl ? (
-                        <div className="w-20 h-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-20 h-20 bg-gray-100 rounded-md flex items-center justify-center text-xs text-gray-500">
-                          Sin imagen
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <p className="text-sm text-gray-500">{item.description}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{item.category || '-'}</td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      ${parseFloat(item.price).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-right text-sm space-x-2">
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        ✏️ Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id || item._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        🗑️ Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+
+          <Field label="Descripción">
+            {(a11y) => <Textarea {...a11y} value={formData.description} onChange={set('description')} placeholder="Ingredientes, porción…" />}
+          </Field>
+
+          <ImageDropzone
+            label="Foto del plato"
+            preview={imagePreview}
+            uploading={isUploadingImage}
+            onSelect={handleImageSelect}
+            onClear={() => {
+              setImagePreview('');
+              setFormData((prev) => ({ ...prev, imageUrl: '' }));
+            }}
+          />
+        </form>
+      </Sheet>
     </Layout>
   );
 };
