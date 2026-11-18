@@ -1,0 +1,33 @@
+/* Ajustes sobre Sonner para que comparta la tipografía y los radios del sistema */
+[data-sonner-toaster] {
+  --normal-bg: var(--surface);
+  --normal-text: var(--text);
+  --normal-border: var(--border);
+  --border-radius: var(--radius-lg);
+  font-family: var(--font-sans);
+}
+
+[data-sonner-toast].toast {
+  box-shadow: var(--shadow-lg);
+  border: none;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 500;
+}
+
+[data-sonner-toast] [data-description] {
+  color: var(--text-2);
+}
+
+[data-sonner-toast] [data-button][data-action] {
+  background: var(--danger);
+  color: #fff;
+  border-radius: var(--radius-sm);
+}
+
+[data-sonner-toast] [data-button][data-cancel] {
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+}
