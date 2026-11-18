@@ -55,7 +55,10 @@ export const DashboardPage = () => {
   }, []);
 
   const recentOrders = useMemo(() => [...data.orders].reverse().slice(0, 5), [data.orders]);
-  const recentReservations = useMemo(() => [...data.reservations].reverse().slice(0, 5), [data.reservations]);
+  const recentReservations = useMemo(() => {
+    const toTime = (r) => new Date(`${String(r.date || '').slice(0, 10)}T${r.time || '00:00'}`).getTime() || 0;
+    return [...data.reservations].sort((a, b) => toTime(a) - toTime(b)).slice(0, 5);
+  }, [data.reservations]);
 
   const stats = [
     { label: 'Restaurantes', value: data.restaurants.length, icon: Store, hint: 'Locales registrados' },
