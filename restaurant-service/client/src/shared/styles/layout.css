@@ -256,3 +256,17 @@
     transform: translateY(6px);
   }
 }
+
+/* ---------- Pantalla de carga ---------- */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 100dvh;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  /* Aparece con retraso: si la verificación es rápida no hay parpadeo */
+  animation: fade-in 200ms ease 300ms both;
+}
