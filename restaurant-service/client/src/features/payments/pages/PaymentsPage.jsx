@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Layout } from '../../../shared/components/Layout.jsx';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { getAllPayments, createPayment, updatePayment, deletePayment } from '../../../shared/api/paymentsApi.js';
 import { getAllRestaurants } from '../../../shared/api/restaurantApi.js';
 import { getAllOrders } from '../../../shared/api/ordersApi.js';

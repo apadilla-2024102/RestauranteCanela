@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layout } from '../../../shared/components/Layout.jsx';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import {
   getAllReservations,
   createReservation,

@@ -8,7 +8,7 @@ import {
   deleteRestaurant,
   uploadRestaurantImage,
 } from '../../../shared/api/restaurantApi.js';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export const RestaurantPage = () => {
   const [restaurants, setRestaurants] = useState([]);

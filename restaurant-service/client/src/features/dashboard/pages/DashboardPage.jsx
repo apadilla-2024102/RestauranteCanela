@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '../../../shared/components/Layout.jsx';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Building2, FileText, ShoppingCart, Calendar, ArrowRight } from 'lucide-react';
 import { getAllRestaurants } from '../../../shared/api/restaurantApi.js';
 import { getAllOrders } from '../../../shared/api/ordersApi.js';

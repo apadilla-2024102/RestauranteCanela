@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Layout } from '../../../shared/components/Layout.jsx';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Plus, X, Edit3, Trash2, DollarSign, BarChart3, ShoppingCart, CalendarCheck2, CreditCard, Users, Box } from 'lucide-react';
 import { getAllReports, createReport, updateReport, deleteReport } from '../../../shared/api/reportsApi.js';
 import { getAllPayments } from '../../../shared/api/paymentsApi.js';
