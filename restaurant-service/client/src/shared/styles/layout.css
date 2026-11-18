@@ -1,0 +1,168 @@
+/* ---------- Shell ---------- */
+.app-shell {
+  min-height: 100dvh;
+}
+
+@media (min-width: 1024px) {
+  .app-shell {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+/* ---------- Sidebar (escritorio) ---------- */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.sidebar__top {
+  padding: var(--space-1) var(--space-2) var(--space-5);
+}
+
+.sidebar__scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar__bottom {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- Marca ---------- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, #fff) 0%, var(--accent) 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brand__name {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.brand__sub {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+/* ---------- Navegación ---------- */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav__label {
+  padding: 0 var(--space-2) 6px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+/* Sin animación de color al navegar: se usa decenas de veces al día */
+.sidebar-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  font-weight: 450;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-press) var(--ease-out);
+}
+
+.sidebar-nav__link:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-nav__link:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.sidebar-nav__link.active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-nav__link.active svg {
+  color: var(--accent);
+}
+
+/* ---------- Usuario ---------- */
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-2);
+}
+
+.user-card__avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.user-card__name {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.user-card__email {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
