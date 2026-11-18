@@ -1,0 +1,30 @@
+.spinner {
+  position: relative;
+  display: inline-block;
+  width: var(--size);
+  height: var(--size);
+}
+
+.spinner__bar {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 28%;
+  border-radius: 2px;
+  background: currentColor;
+  transform-origin: 50% calc(var(--size) / 2);
+  transform: rotate(calc(var(--i) * 45deg));
+  opacity: 0.15;
+  animation: spinner-fade 800ms linear infinite;
+  animation-delay: calc(var(--i) * 100ms - 800ms);
+}
+
+@keyframes spinner-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
