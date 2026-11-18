@@ -1,26 +1,44 @@
-import { useEffect, useState } from 'react';
-import { Layout } from '../../../shared/components/Layout.jsx';
+import { useEffect, useMemo, useState } from 'react';
+import { Banknote, CreditCard, Landmark, Plus, Wallet } from 'lucide-react';
 import { toast } from 'sonner';
+import { Layout } from '../../../shared/components/Layout.jsx';
+import { PageHeader } from '../../../shared/components/ui/PageHeader.jsx';
+import { Button } from '../../../shared/components/ui/Button.jsx';
+import { Badge } from '../../../shared/components/ui/Badge.jsx';
+import { Sheet } from '../../../shared/components/ui/Sheet.jsx';
+import { TableCard } from '../../../shared/components/ui/TableCard.jsx';
+import { RowActions } from '../../../shared/components/ui/RowActions.jsx';
+import { NumberTicker } from '../../../shared/components/ui/NumberTicker.jsx';
+import { Field, Input, Select } from '../../../shared/components/ui/Field.jsx';
+import { confirmAction } from '../../../shared/lib/confirm.js';
+import { formatMoney, shortId, entityId, restaurantName } from '../../../shared/lib/format.js';
+import { PAYMENT_STATUS, PAYMENT_METHOD, statusOf } from '../../../shared/lib/status.js';
 import { getAllPayments, createPayment, updatePayment, deletePayment } from '../../../shared/api/paymentsApi.js';
 import { getAllRestaurants } from '../../../shared/api/restaurantApi.js';
 import { getAllOrders } from '../../../shared/api/ordersApi.js';
 
+const FORM_ID = 'payment-form';
+const EMPTY = { orderId: '', restaurantId: '', amount: '', method: 'credit_card', status: 'pending' };
+
+const METHOD_ICON = {
+  credit_card: CreditCard,
+  debit_card: CreditCard,
+  cash: Banknote,
+  bank_transfer: Landmark,
+};
+
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [orders, setOrders] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [formData, setFormData] = useState({
-    orderId: '',
-    restaurantId: '',
-    amount: '',
-    method: 'credit_card',
-    status: 'pending',
-  });
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState(EMPTY);
 
   useEffect(() => {
     loadPayments();
@@ -33,9 +51,11 @@ export const PaymentsPage = () => {
       setLoading(true);
       const data = await getAllPayments();
       setPayments(Array.isArray(data) ? data : []);
-    } catch (error) {
+      setError(null);
+    } catch (err) {
+      setError(err?.message || 'Error al cargar pagos');
       toast.error('Error al cargar pagos');
-      console.error(error);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -46,9 +66,9 @@ export const PaymentsPage = () => {
       setOrdersLoading(true);
       const data = await getAllOrders();
       setOrders(Array.isArray(data) ? data : []);
-    } catch (error) {
+    } catch (err) {
       toast.error('Error al cargar órdenes');
-      console.error(error);
+      console.error(err);
     } finally {
       setOrdersLoading(false);
     }
@@ -59,38 +79,29 @@ export const PaymentsPage = () => {
       setRestaurantsLoading(true);
       const data = await getAllRestaurants();
       setRestaurants(Array.isArray(data) ? data : []);
-    } catch (error) {
+    } catch (err) {
       toast.error('Error al cargar restaurantes');
-      console.error(error);
+      console.error(err);
     } finally {
       setRestaurantsLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.orderId || !formData.restaurantId || !formData.amount) {
-      toast.error('ID de orden, ID de restaurante y monto son requeridos');
-      return;
-    }
+  const summary = useMemo(() => {
+    const sum = (list) => list.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+    return {
+      collected: sum(payments.filter((p) => p.status === 'completed')),
+      pending: sum(payments.filter((p) => p.status === 'pending' || p.status === 'processing')),
+      count: payments.length,
+    };
+  }, [payments]);
 
-    try {
-      const payload = { ...formData, amount: parseFloat(formData.amount) };
-      if (editingId) {
-        await updatePayment(editingId, payload);
-        toast.success('Pago actualizado');
-      } else {
-        await createPayment(payload);
-        toast.success('Pago creado');
-      }
-      setFormData({ orderId: '', restaurantId: '', amount: '', method: 'credit_card', status: 'pending' });
-      setEditingId(null);
-      setShowForm(false);
-      loadPayments();
-    } catch (error) {
-      toast.error(error?.message || 'Error al guardar pago');
-      console.error(error);
-    }
+  const set = (key) => (e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormData(EMPTY);
+    setSheetOpen(true);
   };
 
   const handleEdit = (payment) => {
@@ -101,226 +112,222 @@ export const PaymentsPage = () => {
       method: payment.method || 'credit_card',
       status: payment.status,
     });
-    setEditingId(payment.id);
-    setShowForm(true);
+    setEditingId(entityId(payment));
+    setSheetOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar este pago?')) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.orderId || !formData.restaurantId || !formData.amount) {
+      toast.error('Orden, restaurante y monto son requeridos');
+      return;
+    }
+
+    setSaving(true);
     try {
-      await deletePayment(id);
+      const payload = { ...formData, amount: parseFloat(formData.amount) };
+      if (editingId) {
+        await updatePayment(editingId, payload);
+        toast.success('Pago actualizado');
+      } else {
+        await createPayment(payload);
+        toast.success('Pago creado');
+      }
+      setSheetOpen(false);
+      loadPayments();
+    } catch (err) {
+      toast.error(err?.message || 'Error al guardar pago');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (payment) => {
+    const ok = await confirmAction({
+      title: `¿Eliminar el pago de ${formatMoney(payment.amount)}?`,
+      description: 'Esta acción no se puede deshacer.',
+    });
+    if (!ok) return;
+    try {
+      await deletePayment(entityId(payment));
       toast.success('Pago eliminado');
       loadPayments();
-    } catch (error) {
+    } catch (err) {
       toast.error('Error al eliminar pago');
     }
   };
 
-  const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    processing: 'bg-blue-100 text-blue-800',
-    completed: 'bg-green-100 text-green-800',
-    failed: 'bg-red-100 text-red-800',
-    refunded: 'bg-gray-100 text-gray-800',
-  };
+  const columns = [
+    {
+      key: 'order',
+      header: 'Orden',
+      render: (p) => <span className="mono text-muted">#{shortId(p.orderId)}</span>,
+    },
+    {
+      key: 'restaurant',
+      header: 'Restaurante',
+      render: (p) => <span className="nowrap">{restaurantName(p.restaurantId, restaurants)}</span>,
+    },
+    {
+      key: 'method',
+      header: 'Método',
+      render: (p) => {
+        const Icon = METHOD_ICON[p.method] || Wallet;
+        return (
+          <span className="row text-muted nowrap" style={{ '--gap': '8px' }}>
+            <Icon size={15} /> {PAYMENT_METHOD[p.method] || p.method}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      render: (p) => {
+        const s = statusOf(PAYMENT_STATUS, p.status);
+        return <Badge tone={s.tone}>{s.label}</Badge>;
+      },
+    },
+    {
+      key: 'amount',
+      header: 'Monto',
+      align: 'right',
+      render: (p) => <span className="tabular nowrap table__primary">{formatMoney(p.amount)}</span>,
+    },
+    {
+      key: 'actions',
+      header: <span className="visually-hidden">Acciones</span>,
+      align: 'right',
+      width: 96,
+      render: (p) => <RowActions label="pago" onEdit={() => handleEdit(p)} onDelete={() => handleDelete(p)} />,
+    },
+  ];
 
-  const statusLabels = {
-    pending: 'Pendiente',
-    processing: 'Procesando',
-    completed: 'Completado',
-    failed: 'Fallido',
-    refunded: 'Reembolsado',
-  };
-
-  const methodLabels = {
-    credit_card: 'Tarjeta Crédito',
-    debit_card: 'Tarjeta Débito',
-    cash: 'Efectivo',
-    bank_transfer: 'Transferencia',
-  };
+  const cannotSubmit = ordersLoading || restaurantsLoading || !orders.length || !restaurants.length;
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Pagos</h1>
-            <p className="text-gray-600">Gestiona los pagos de las órdenes</p>
-          </div>
-          <button
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingId(null);
-              setFormData({ orderId: '', restaurantId: '', amount: '', method: 'credit_card', status: 'pending' });
-            }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          >
-            {showForm ? '✕ Cancelar' : '+ Nuevo Pago'}
-          </button>
+      <PageHeader
+        eyebrow="Finanzas"
+        title="Pagos"
+        description="Cobros asociados a cada orden."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus /> Nuevo pago
+          </Button>
+        }
+      />
+
+      <div className="summary-strip">
+        <div className="summary-strip__item">
+          <span className="summary-strip__label">Cobrado</span>
+          <span className="summary-strip__value">
+            <NumberTicker value={summary.collected} format={formatMoney} />
+          </span>
         </div>
-
-        {showForm && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {editingId ? 'Editar Pago' : 'Nuevo Pago'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Orden</label>
-                  <select
-                    value={formData.orderId}
-                    onChange={(e) => setFormData({ ...formData, orderId: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Selecciona una orden</option>
-                    {orders.map((order) => (
-                      <option key={order.id || order._id} value={order.id || order._id}>
-                        {order.id || order._id} - {order.status || 'Orden'}
-                      </option>
-                    ))}
-                  </select>
-                  {ordersLoading ? (
-                    <p className="text-xs text-gray-500 mt-1">Cargando órdenes...</p>
-                  ) : orders.length === 0 ? (
-                    <p className="text-xs text-red-500 mt-1">No hay órdenes disponibles.</p>
-                  ) : (
-                    <p className="text-xs text-gray-500 mt-1">Selecciona una orden válida.</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Restaurante</label>
-                  <select
-                    value={formData.restaurantId}
-                    onChange={(e) => setFormData({ ...formData, restaurantId: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Selecciona un restaurante</option>
-                    {restaurants.map((restaurant) => (
-                      <option key={restaurant.id || restaurant._id} value={restaurant.id || restaurant._id}>
-                        {restaurant.name || restaurant.description || restaurant.id || restaurant._id}
-                      </option>
-                    ))}
-                  </select>
-                  {restaurantsLoading ? (
-                    <p className="text-xs text-gray-500 mt-1">Cargando restaurantes...</p>
-                  ) : restaurants.length === 0 ? (
-                    <p className="text-xs text-red-500 mt-1">No hay restaurantes disponibles.</p>
-                  ) : (
-                    <p className="text-xs text-gray-500 mt-1">Selecciona el restaurante correspondiente.</p>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="number"
-                  placeholder="Monto"
-                  step="0.01"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <select
-                  value={formData.method}
-                  onChange={(e) => setFormData({ ...formData, method: e.target.value })}
-                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="credit_card">Tarjeta Crédito</option>
-                  <option value="debit_card">Tarjeta Débito</option>
-                  <option value="cash">Efectivo</option>
-                  <option value="bank_transfer">Transferencia</option>
-                </select>
-              </div>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="pending">Pendiente</option>
-                <option value="processing">Procesando</option>
-                <option value="completed">Completado</option>
-                <option value="failed">Fallido</option>
-                <option value="refunded">Reembolsado</option>
-              </select>
-              <button
-                type="submit"
-                disabled={ordersLoading || restaurantsLoading || !orders.length || !restaurants.length}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {editingId ? 'Guardar Cambios' : 'Crear'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="text-center py-8">Cargando...</div>
-        ) : payments.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">No hay pagos</div>
-        ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    ID de orden
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Restaurante
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Monto
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Método
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-mono text-gray-900">
-                      {payment.orderId?._id ? payment.orderId._id.slice(0, 8) : payment.orderId?.slice(0, 8) || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {payment.restaurantId?.name || payment.restaurantId || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      ${parseFloat(payment.amount).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 capitalize">{methodLabels[payment.method] || payment.method}</td>
-                    <td className="px-6 py-4 text-sm">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[payment.status] || statusColors['pending']}`}>
-                        {statusLabels[payment.status] || payment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-sm space-x-2">
-                      <button
-                        onClick={() => handleEdit(payment)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        ✏️ Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(payment.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        🗑️ Eliminar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="summary-strip__item">
+          <span className="summary-strip__label">Por cobrar</span>
+          <span className="summary-strip__value">
+            <NumberTicker value={summary.pending} format={formatMoney} />
+          </span>
+        </div>
+        <div className="summary-strip__item">
+          <span className="summary-strip__label">Transacciones</span>
+          <span className="summary-strip__value">
+            <NumberTicker value={summary.count} />
+          </span>
+        </div>
       </div>
+
+      <TableCard
+        loading={loading}
+        error={error}
+        onRetry={loadPayments}
+        rows={payments}
+        columns={columns}
+        caption="Pagos"
+        empty={{ icon: Wallet, title: 'No hay pagos', description: 'Los pagos registrados aparecerán aquí.' }}
+      />
+
+      <Sheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title={editingId ? 'Editar pago' : 'Nuevo pago'}
+        description="Registra el cobro de una orden."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setSheetOpen(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form={FORM_ID} loading={saving} disabled={cannotSubmit}>
+              {editingId ? 'Guardar cambios' : 'Registrar pago'}
+            </Button>
+          </>
+        }
+      >
+        <form id={FORM_ID} className="stack" onSubmit={handleSubmit}>
+          <Field
+            label="Orden"
+            hint={ordersLoading ? 'Cargando órdenes…' : orders.length === 0 ? 'No hay órdenes disponibles.' : undefined}
+          >
+            {(a11y) => (
+              <Select {...a11y} value={formData.orderId} onChange={set('orderId')} disabled={ordersLoading}>
+                <option value="">Selecciona una orden</option>
+                {orders.map((order) => (
+                  <option key={entityId(order)} value={entityId(order)}>
+                    #{shortId(order)} · {order.customerName || 'Cliente'} · {formatMoney(order.total)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+          <Field
+            label="Restaurante"
+            hint={restaurantsLoading ? 'Cargando restaurantes…' : restaurants.length === 0 ? 'No hay restaurantes disponibles.' : undefined}
+          >
+            {(a11y) => (
+              <Select {...a11y} value={formData.restaurantId} onChange={set('restaurantId')} disabled={restaurantsLoading}>
+                <option value="">Selecciona un restaurante</option>
+                {restaurants.map((r) => (
+                  <option key={entityId(r)} value={entityId(r)}>
+                    {r.name || r.description || entityId(r)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+          <div className="grid-2">
+            <Field label="Monto">
+              {(a11y) => (
+                <Input {...a11y} type="number" inputMode="decimal" step="0.01" min="0" value={formData.amount} onChange={set('amount')} placeholder="0.00" />
+              )}
+            </Field>
+            <Field label="Método">
+              {(a11y) => (
+                <Select {...a11y} value={formData.method} onChange={set('method')}>
+                  {Object.entries(PAYMENT_METHOD).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
+          </div>
+          <Field label="Estado">
+            {(a11y) => (
+              <Select {...a11y} value={formData.status} onChange={set('status')}>
+                {Object.entries(PAYMENT_STATUS).map(([value, { label }]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+        </form>
+      </Sheet>
     </Layout>
   );
 };
