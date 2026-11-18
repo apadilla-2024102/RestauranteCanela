@@ -1,0 +1,48 @@
+/* Keyframes compartidos */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/*
+ * Movimiento reducido: menos y más suave, no cero.
+ * Se quitan desplazamientos y escalas; se conservan los fundidos que ayudan a entender cambios.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-name: fade-in !important;
+    animation-duration: 150ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .spinner__bar {
+    animation-name: spinner-fade !important;
+    animation-duration: 800ms !important;
+  }
+
+  .skeleton {
+    animation: none !important;
+  }
+
+  .btn:active:not(:disabled),
+  .card--interactive:active,
+  .quick-action:active,
+  .sidebar-nav__link:active,
+  .dropzone:active {
+    transform: none;
+  }
+
+  .segmented__indicator {
+    transition: none;
+  }
+}
