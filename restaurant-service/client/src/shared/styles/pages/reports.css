@@ -1,0 +1,106 @@
+.report-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+@media (max-width: 400px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  animation: rise-in 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.report-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.report-card__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-card__title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.report-card__meta {
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}
+
+.report-card__summary {
+  color: var(--text-2);
+}
+
+.report-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border-radius: var(--radius);
+  background: var(--border);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.report-card__metrics > div {
+  padding: 10px var(--space-3);
+  background: var(--surface);
+}
+
+.report-card__metrics dt {
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+
+.report-card__metrics dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+
+.report-card__extra summary {
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.report-card__extra ul {
+  margin-top: var(--space-2);
+  padding-left: var(--space-4);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  word-break: break-word;
+}
+
+.report-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
