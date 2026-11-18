@@ -1,0 +1,138 @@
+/* ---------- Login ---------- */
+.login {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .login {
+    grid-template-columns: minmax(440px, 1fr) 1.1fr;
+  }
+}
+
+.login__main {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--space-5);
+  padding-top: calc(var(--space-6) + env(safe-area-inset-top));
+}
+
+@media (min-width: 768px) {
+  .login__main {
+    padding: var(--space-8) var(--space-12);
+  }
+}
+
+.login__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: var(--space-10) 0;
+}
+
+/* Entrada coreografiada: título, texto y formulario con pequeños desfases */
+.login__content > * {
+  animation: rise-in 500ms var(--ease-out) both;
+}
+.login__content > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.login__content > *:nth-child(3) {
+  animation-delay: 110ms;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+}
+
+.login__title {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.03em;
+}
+
+.login__subtitle {
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-8);
+  color: var(--text-2);
+}
+
+.login__footer {
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.login-form .btn {
+  --btn-h: 40px;
+  margin-top: var(--space-2);
+}
+
+.login-form__error {
+  padding: 10px var(--space-3);
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-sm);
+  animation: shake 360ms var(--ease-out);
+}
+
+@keyframes shake {
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.password-input {
+  position: relative;
+}
+
+.password-input .input {
+  padding-right: 40px;
+}
+
+.password-input__toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  transition: color var(--duration-fast) ease, transform var(--duration-press) var(--ease-out);
+}
+
+.password-input__toggle:active {
+  transform: scale(0.92);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .password-input__toggle:hover {
+    color: var(--text);
+  }
+}
