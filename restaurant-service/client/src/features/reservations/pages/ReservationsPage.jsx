@@ -169,6 +169,7 @@ export const ReservationsPage = () => {
     },
     {
       key: 'guests',
+      hideOnMobile: true,
       header: 'Personas',
       render: (r) => (
         <span className="row text-muted tabular" style={{ '--gap': '6px' }}>
@@ -178,11 +179,13 @@ export const ReservationsPage = () => {
     },
     {
       key: 'restaurant',
+      hideOnMobile: true,
       header: 'Restaurante',
       render: (r) => <span className="text-muted nowrap">{restaurantName(r.restaurantId, restaurants)}</span>,
     },
     {
       key: 'email',
+      hideOnMobile: true,
       header: 'Email',
       render: (r) => <span className="text-muted">{r.email}</span>,
     },

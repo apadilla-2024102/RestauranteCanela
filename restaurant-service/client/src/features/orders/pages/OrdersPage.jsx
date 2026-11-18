@@ -178,6 +178,7 @@ export const OrdersPage = () => {
   const columns = [
     {
       key: 'id',
+      hideOnMobile: true,
       header: 'Orden',
       render: (order) => <span className="mono text-muted">#{shortId(order)}</span>,
     },
@@ -197,6 +198,7 @@ export const OrdersPage = () => {
     },
     {
       key: 'restaurant',
+      hideOnMobile: true,
       header: 'Restaurante',
       render: (order) => <span className="text-muted nowrap">{restaurantName(order.restaurantId, restaurants)}</span>,
     },

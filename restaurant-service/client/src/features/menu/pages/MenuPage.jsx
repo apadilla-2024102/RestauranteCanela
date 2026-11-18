@@ -187,11 +187,13 @@ export const MenuPage = () => {
     },
     {
       key: 'category',
+      hideOnMobile: true,
       header: 'Categoría',
       render: (item) => (item.category ? <Badge dot={false}>{MENU_CATEGORY[item.category] || item.category}</Badge> : '—'),
     },
     {
       key: 'restaurant',
+      hideOnMobile: true,
       header: 'Restaurante',
       render: (item) => <span className="text-muted nowrap">{restaurantName(item.restaurantId, restaurants)}</span>,
     },

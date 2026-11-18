@@ -161,6 +161,7 @@ export const PaymentsPage = () => {
   const columns = [
     {
       key: 'order',
+      hideOnMobile: true,
       header: 'Orden',
       render: (p) => <span className="mono text-muted">#{shortId(p.orderId)}</span>,
     },
@@ -171,6 +172,7 @@ export const PaymentsPage = () => {
     },
     {
       key: 'method',
+      hideOnMobile: true,
       header: 'Método',
       render: (p) => {
         const Icon = METHOD_ICON[p.method] || Wallet;

@@ -1,6 +1,6 @@
 /**
  * Tabla de datos simple.
- * columns: [{ key, header, align?, width?, render?(row) }]
+ * columns: [{ key, header, align?, width?, hideOnMobile?, render?(row) }]
  */
 export const DataTable = ({ columns, rows, rowKey = (row) => row.id || row._id, caption }) => (
   <div className="table-wrap">
@@ -12,6 +12,7 @@ export const DataTable = ({ columns, rows, rowKey = (row) => row.id || row._id, 
             <th
               key={col.key}
               scope="col"
+              className={col.hideOnMobile ? 'hide-mobile' : undefined}
               style={{ width: col.width, textAlign: col.align || 'left' }}
             >
               {col.header}
@@ -23,7 +24,7 @@ export const DataTable = ({ columns, rows, rowKey = (row) => row.id || row._id, 
         {rows.map((row, index) => (
           <tr key={rowKey(row) ?? index} style={{ '--row': Math.min(index, 10) }}>
             {columns.map((col) => (
-              <td key={col.key} style={{ textAlign: col.align || 'left' }}>
+              <td key={col.key} className={col.hideOnMobile ? 'hide-mobile' : undefined} style={{ textAlign: col.align || 'left' }}>
                 {col.render ? col.render(row) : row[col.key] ?? '—'}
               </td>
             ))}
